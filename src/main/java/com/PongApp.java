@@ -9,6 +9,8 @@ import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import javafx.geometry.Point2D;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -21,6 +23,7 @@ import java.util.Map;
 import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class PongApp extends GameApplication {
+    public static boolean isTwoPlayerMode;
     // 主界面传值的游戏难度
     static int dif = 1;
     // 玩家胜利的提示
@@ -46,17 +49,22 @@ public class PongApp extends GameApplication {
         settings.setTitle("Ping Pong");
         settings.setVersion("1.1");
         // 窗口大小
-        settings.setWidth(800);
-        settings.setHeight(600);
-        settings.setManualResizeEnabled(true);
+        settings.setWidth(1600);
+        settings.setHeight(1200);
+        //settings.setManualResizeEnabled(true);
         // 启用开始菜单
         settings.setMainMenuEnabled(true);
-//        settings.setGameMenuEnabled(false);
+        //settings.setGameMenuEnabled(false);
         settings.setSceneFactory(new PongSceneFactory());
+
+        // 添加模式选择
+        //settings.setMenuEnabled(true);
     }
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
+        vars.put("isTwoPlayerMode", false); // 默认为单人模式
+
         vars.put("player1score", 0);
         vars.put("player2score", 0);
 
@@ -64,15 +72,18 @@ public class PongApp extends GameApplication {
         vars.put("key_w", false);
         vars.put("key_s", false);
         vars.put("mousePressed", false);
+        vars.put("key_up", false);
+        vars.put("key_down", false);
 
         vars.put("difficulty", dif);
     }
 
     @Override
     protected void initInput() {
-        getInput().addAction(new UserAction("up") {
+        // 玩家1控制
+        getInput().addAction(new UserAction("Player 1 Up") {
             @Override
-            protected void onActionBegin() {
+            protected void onAction() {
                 set("key_w", true);
             }
 
@@ -82,9 +93,9 @@ public class PongApp extends GameApplication {
             }
         }, KeyCode.W);
 
-        getInput().addAction(new UserAction("down") {
+        getInput().addAction(new UserAction("Player 1 Down") {
             @Override
-            protected void onActionBegin() {
+            protected void onAction() {
                 set("key_s", true);
             }
 
@@ -93,7 +104,35 @@ public class PongApp extends GameApplication {
                 set("key_s", false);
             }
         }, KeyCode.S);
+
+        // 如果是双人模式，添加玩家2控制
+        if (getb("isTwoPlayerMode")) {
+            getInput().addAction(new UserAction("Player 2 Up") {
+                @Override
+                protected void onAction() {
+                    set("key_up", true);
+                }
+
+                @Override
+                protected void onActionEnd() {
+                    set("key_up", false);
+                }
+            }, KeyCode.UP);
+
+            getInput().addAction(new UserAction("Player 2 Down") {
+                @Override
+                protected void onAction() {
+                    set("key_down", true);
+                }
+
+                @Override
+                protected void onActionEnd() {
+                    set("key_down", false);
+                }
+            }, KeyCode.DOWN);
+        }
     }
+
 
     @Override
     protected void initUI() {
@@ -178,6 +217,21 @@ public class PongApp extends GameApplication {
         });
     }
 
+    // 自定义背（更改RGB值）
+    private void initCustomBackground() {
+        // 自定义背景颜色 (使用深红色和深蓝色作为默认值)
+        Color leftColor = Color.rgb(50, 0, 0);    // 深红色
+        Color rightColor = Color.rgb(0, 0, 80);  // 深蓝色
+
+        // 你可以根据需要调整 RGB 值
+        entityBuilder()
+                .at(0, 0) // 从 (0, 0) 开始绘制
+                .view(new CustomBackgroundView(leftColor, rightColor))
+                .zIndex(-1) // 确保背景在最底层
+                .buildAndAttach();
+    }
+
+
     @Override
     protected void initGame() {
         // 缓存音效
@@ -188,15 +242,24 @@ public class PongApp extends GameApplication {
 
         // 设置世界重力
         getPhysicsWorld().setGravity(0, 0);
-        // 设置背景颜色
-        getGameScene().setBackgroundColor(Color.BLACK);
+
+        // 添加自定义背景实体
+        initCustomBackground();
 
         // 生成球
         spawn("ball", new SpawnData(getAppWidth() / 2d, getAppHeight() / 2d));
-        // 生成玩家拍子
+
+
+        // 生成玩家1的球拍
         spawn("bat", new SpawnData().put("isPlayer", true));
-        // 生成电脑拍子
-        spawn("bat", new SpawnData().put("isPlayer", false));
+
+        // 如果是双人模式，生成玩家2的球拍
+        if (getb("isTwoPlayerMode")) {
+            spawn("bat", new SpawnData().put("isPlayer", true));
+        } else {
+            // 电脑拍子
+            spawn("bat", new SpawnData().put("isPlayer", false));
+        }
 
         // 生成边界
         entityBuilder().type(PongType.wall).collidable().with(new PhysicsComponent()).buildScreenBoundsAndAttach(100);
