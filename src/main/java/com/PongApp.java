@@ -38,7 +38,7 @@ public class PongApp extends GameApplication {
             "菜就多练",
             "杂鱼~ 杂鱼~",
             "再接再厉!",
-            "有实力,但不多"
+            "就知道你不行"
     };
 
     @Override
@@ -245,8 +245,8 @@ public class PongApp extends GameApplication {
     @Override
     protected void initGame() {
         // 缓存音效
-        getAssetLoader().loadSound("hit_bat.wav");
-        getAssetLoader().loadSound("hit_wall.wav");
+        getAssetLoader().loadSound("hit_bat.mp3");
+        getAssetLoader().loadSound("hit_wall.mp3");
         //添加实体工厂
         getGameWorld().addEntityFactory(new PongFactory());
 

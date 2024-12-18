@@ -181,7 +181,7 @@ public class PongSceneFactory extends SceneFactory {
                 getContentRoot().setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, javafx.geometry.Insets.EMPTY)));
 
                 // 说明内容
-                Label instructionsLabel = new Label("操作说明：\n玩家1：W/S键控制上/下\n玩家2：方向键控制上/下\n目标：将球打到对方区域");
+                Label instructionsLabel = new Label("操作说明：\n目标：将球打到对方区域\n\n玩家1：W/S键控制上/下\n玩家2：方向键控制上/下");
                 instructionsLabel.setFont(Font.font(20));
                 instructionsLabel.setTextFill(Color.WHITE);
                 instructionsLabel.setLayoutX(50);
@@ -208,7 +208,7 @@ public class PongSceneFactory extends SceneFactory {
                 getContentRoot().setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, javafx.geometry.Insets.EMPTY)));
 
                 // 开发者信息
-                Label developerLabel = new Label("开发者：XXX\n版本：1.0\n制作时间：2024年12月");
+                Label developerLabel = new Label("开发者：孙健柏\n版本：v1.0\n赞美欧姆弥赛亚");
                 developerLabel.setFont(Font.font(20));
                 developerLabel.setTextFill(Color.WHITE);
                 developerLabel.setLayoutX(50);

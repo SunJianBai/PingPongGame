@@ -78,18 +78,23 @@ public class EnemyBatComponent extends Component {
     }
 
     void AI_0() {
-        // 判断球是否在左边...
-        boolean isBallLeft = !(ball.getX() < entity.getRightX());
-        // ...但是脑抽
+        // 判断球是否在左边
+        boolean isBallLeft = ball.getX() < entity.getRightX();
 
-        if (entity.getY() > ball.getBottomY()) {// 如果球在上面
-            // 向上移动
+        // 随机性因子，随机生成一个 -1, 0, 1 的值
+        int randomFactor = (int) (Math.random() * 3) - 1; // -1:向下偏移, 0:保持原方向, 1:向上偏移
+
+        if (entity.getY() > ball.getBottomY()) { // 如果球在上方
+            // 向上移动，并加入随机性
             a = isBallLeft ? -A : A;
-        } else if (entity.getBottomY() < ball.getY()) {//如果球在下面
-            // 向下移动
+            a += randomFactor * (A / 3); // 随机偏移，但不会过大，A/3 控制偏移量
+        } else if (entity.getBottomY() < ball.getY()) { // 如果球在下方
+            // 向下移动，并加入随机性
             a = isBallLeft ? A : -A;
-        } else { // 就在中间
-            a = 0;
+            a += randomFactor * (A / 3); // 随机偏移
+        } else { // 如果球在中间
+            // 偶尔停顿一下
+            a = randomFactor == 0 ? 0 : (isBallLeft ? -A : A);
         }
     }
 
