@@ -282,38 +282,74 @@ public class PongApp extends GameApplication {
         entityBuilder().type(PongType.wall).collidable().with(new PhysicsComponent()).buildScreenBoundsAndAttach(100);
 
         // 当游戏结束时
-        getip("player1score").addListener((observable, oldValue, newValue) -> {
-            if (newValue.intValue() >= 10) {
-                getDialogService().showChoiceBox(
-                    playerWinStrings[dif] + "\n是否重新开始?",
-                    o -> {
-                        if (o.equals("是")) {
-                            getGameController().startNewGame();
-                        } else {
-                            getGameController().exit();
-                        }
-                    },
-                    "是",
-                    "否"
-                );
-            }
-        });
-        getip("player2score").addListener((observable, oldValue, newValue) -> {
-            if (newValue.intValue() >= 10) {
-                getDialogService().showChoiceBox(
-                    enemyWinStrings[dif] + "\n是否重新开始?",
-                    o -> {
-                        if (o.equals("是")) {
-                            getGameController().startNewGame();
-                        } else {
-                            getGameController().exit();
-                        }
-                    },
-                    "是",
-                    "否"
-                );
-            }
-        });
+        if (isTwoP) {
+            getip("player1score").addListener((observable, oldValue, newValue) -> {
+                if (newValue.intValue() >= 10) {
+                    getDialogService().showChoiceBox(
+                         "恭喜玩家1获胜!\n右边的玩家还是逊啦\n是否重新开始?",
+                        o -> {
+                            if (o.equals("是")) {
+                                getGameController().startNewGame();
+                            } else {
+                                getGameController().exit();
+                            }
+                        },
+                        "是",
+                        "否"
+                    );
+                }
+            });
+            getip("player2score").addListener((observable, oldValue, newValue) -> {
+                if (newValue.intValue() >= 10) {
+                    getDialogService().showChoiceBox(
+                          "恭喜玩家2获胜!\n左边的玩家有点菜哦\n是否重新开始?",
+                        o -> {
+                            if (o.equals("是")) {
+                                getGameController().startNewGame();
+                            } else {
+                                getGameController().exit();
+                            }
+                        },
+                        "是",
+                        "否"
+                    );
+                }
+            });
+        }else{
+            getip("player1score").addListener((observable, oldValue, newValue) -> {
+                if (newValue.intValue() >= 10) {
+                    getDialogService().showChoiceBox(
+                        playerWinStrings[dif] + "\n是否重新开始?",
+                        o -> {
+                            if (o.equals("是")) {
+                                getGameController().startNewGame();
+                            } else {
+                                getGameController().exit();
+                            }
+                        },
+                        "是",
+                        "否"
+                    );
+                }
+            });
+            getip("player2score").addListener((observable, oldValue, newValue) -> {
+                if (newValue.intValue() >= 10) {
+                    getDialogService().showChoiceBox(
+                        enemyWinStrings[dif] + "\n是否重新开始?",
+                        o -> {
+                            if (o.equals("是")) {
+                                getGameController().startNewGame();
+                            } else {
+                                getGameController().exit();
+                            }
+                        },
+                        "是",
+                        "否"
+                    );
+                }
+            });
+        }
+
     }
 
     public static void main(String[] args) {
