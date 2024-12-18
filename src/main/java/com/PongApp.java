@@ -213,7 +213,7 @@ public class PongApp extends GameApplication {
                 } else if (boxB.getName().equals("RIGHT")) {
                     inc("player1score", +1);
                 }
-                play("hit_wall.wav");
+                play("hit_wall_new.wav");
                 getGameScene().getViewport().shakeTranslational(5);
             }
         });
@@ -222,7 +222,7 @@ public class PongApp extends GameApplication {
             @Override
             protected void onCollisionBegin(Entity a, Entity b) {
                 // 播放声音
-                play("hit_bat.wav");
+                play("hit_bat_new.wav");
             }
         });
     }
@@ -245,8 +245,8 @@ public class PongApp extends GameApplication {
     @Override
     protected void initGame() {
         // 缓存音效
-        getAssetLoader().loadSound("hit_bat.mp3");
-        getAssetLoader().loadSound("hit_wall.mp3");
+        getAssetLoader().loadSound("hit_bat_new.wav");
+        getAssetLoader().loadSound("hit_wall_new.wav");
         //添加实体工厂
         getGameWorld().addEntityFactory(new PongFactory());
 
