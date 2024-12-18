@@ -156,8 +156,7 @@ public class PongSceneFactory extends SceneFactory {
                         PongApp.isTwoP = false;
                         getController().startNewGame(); // 直接开始游戏
                     });
-                    difficultyButton.setOnMouseEntered(event -> difficultyButton.setTextFill(Color.GOLDENROD));
-                    difficultyButton.setOnMouseExited(event -> difficultyButton.setTextFill(Color.WHITE));
+                    applyButtonHoverEffect(difficultyButton);
                     getContentRoot().getChildren().add(difficultyButton);
                 }
 
@@ -169,8 +168,7 @@ public class PongSceneFactory extends SceneFactory {
                 backButton.setLayoutX(100);
                 backButton.setLayoutY(500);
                 backButton.setOnAction(event -> showMainMenu()); // 返回一级菜单
-                backButton.setOnMouseEntered(event -> backButton.setTextFill(Color.GOLDENROD));
-                backButton.setOnMouseExited(event -> backButton.setTextFill(Color.WHITE));
+                applyButtonHoverEffect(backButton);
 
                 getContentRoot().getChildren().addAll(difficultyLabel, backButton);
             }
@@ -197,8 +195,7 @@ public class PongSceneFactory extends SceneFactory {
                 backButton.setLayoutX(100);
                 backButton.setLayoutY(500);
                 backButton.setOnAction(event -> showMainMenu());
-                backButton.setOnMouseEntered(event -> backButton.setTextFill(Color.GOLDENROD));
-                backButton.setOnMouseExited(event -> backButton.setTextFill(Color.WHITE));
+                applyButtonHoverEffect(backButton);
 
                 getContentRoot().getChildren().addAll(instructionsLabel, backButton);
             }
@@ -225,8 +222,7 @@ public class PongSceneFactory extends SceneFactory {
                 backButton.setLayoutX(100);
                 backButton.setLayoutY(500);
                 backButton.setOnAction(event -> showMainMenu());
-                backButton.setOnMouseEntered(event -> backButton.setTextFill(Color.GOLDENROD));
-                backButton.setOnMouseExited(event -> backButton.setTextFill(Color.WHITE));
+                applyButtonHoverEffect(backButton);
 
                 getContentRoot().getChildren().addAll(developerLabel, backButton);
             }

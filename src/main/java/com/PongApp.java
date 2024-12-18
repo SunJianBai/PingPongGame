@@ -9,11 +9,8 @@ import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import javafx.geometry.Point2D;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
@@ -24,7 +21,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class PongApp extends GameApplication {
     // 定义游戏类型
-    static boolean isTwoP = false;
+    static boolean isTwoP = true;
     // 主界面传值的游戏难度
     static int dif = 1;
     // 玩家胜利的提示
@@ -32,7 +29,7 @@ public class PongApp extends GameApplication {
             "打赢这种程度的敌人有什么好骄傲的",
             "恭喜玩家获得胜利!",
             "不错不错,挺有实力的嘛",
-            "------您------",
+            "高!实在是高!",
             "啊?"
     };
     // 玩家失败的提示
@@ -41,7 +38,7 @@ public class PongApp extends GameApplication {
             "菜就多练",
             "杂鱼~ 杂鱼~",
             "再接再厉!",
-            ""
+            "有实力,但不多"
     };
 
     @Override
@@ -88,11 +85,13 @@ public class PongApp extends GameApplication {
             @Override
             protected void onAction() {
                 set("key_w", true);
+                System.out.println("Player 1 Up pressed"); // 调试用
             }
 
             @Override
             protected void onActionEnd() {
                 set("key_w", false);
+                System.out.println("Player 1 Up released");
             }
         }, KeyCode.W);
 
@@ -100,27 +99,30 @@ public class PongApp extends GameApplication {
             @Override
             protected void onAction() {
                 set("key_s", true);
+                System.out.println("Player 1 Down pressed");
             }
 
             @Override
             protected void onActionEnd() {
                 set("key_s", false);
+                System.out.println("Player 1 Down released");
             }
         }, KeyCode.S);
 
         // 如果是双人模式，添加玩家2控制
-        // 延迟判断双人模式，在 initGame() 中完成模式控制
 
         if (isTwoP) {
             getInput().addAction(new UserAction("Player 2 Up") {
                 @Override
                 protected void onAction() {
                     set("key_up", true);
+                    System.out.println("Player 2 Up pressed");
                 }
 
                 @Override
                 protected void onActionEnd() {
                     set("key_up", false);
+                    System.out.println("Player 2 Up released");
                 }
             }, KeyCode.UP);
 
@@ -128,11 +130,13 @@ public class PongApp extends GameApplication {
                 @Override
                 protected void onAction() {
                     set("key_down", true);
+                    System.out.println("Player 2 Down pressed");
                 }
 
                 @Override
                 protected void onActionEnd() {
                     set("key_down", false);
+                    System.out.println("Player 2 Down released");
                 }
             }, KeyCode.DOWN);
         }
@@ -257,14 +261,21 @@ public class PongApp extends GameApplication {
 
 
         // 生成玩家1的球拍
-        spawn("bat", new SpawnData().put("isPlayer", true));
+        spawn("bat", new SpawnData()
+            .put("isPlayer", true) // 表示该球拍由玩家控制
+            .put("playerID", 1)); // 指定玩家 ID 为 1
 
         // 如果是双人模式，生成玩家2的球拍
         if (isTwoP) {
-            spawn("bat", new SpawnData().put("isPlayer", true));
+            // 双人模式下，玩家 2 的球拍也由玩家控制
+            spawn("bat", new SpawnData()
+                .put("isPlayer", true) // 表示该球拍由玩家控制
+                .put("playerID", 2)); // 指定玩家 ID 为 2
         } else {
-            // 电脑拍子
-            spawn("bat", new SpawnData().put("isPlayer", false));
+            // 单人模式下，玩家 2 的球拍由电脑控制
+            spawn("bat", new SpawnData()
+                .put("isPlayer", false) // 表示该球拍由电脑控制
+                .put("playerID", 2)); // 指定玩家 ID 为 2
         }
 
         // 生成边界

@@ -81,17 +81,19 @@ public class PongFactory implements EntityFactory {
     public Entity newBat(SpawnData data) {
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.KINEMATIC);
-        // 是玩家还是电脑
-        boolean isPlayer = data.get("isPlayer");
+
+        boolean isPlayer = data.get("isPlayer"); // 判断是否为玩家
+        int playerID = data.get("playerID"); // 获取玩家 ID（1 或 2）
+
         return entityBuilder(data)
                 .type(PongType.bat)
                 .viewWithBBox(new Rectangle(10, 80, Color.WHITE))
-                .at(isPlayer ?
+                .at(playerID == 1  ?
                         new Point2D(getAppWidth() / 4d - 5 - 80, getAppHeight() / 2d - 40) :// 如果是玩家的话就生成在屏幕左边
                         new Point2D(getAppWidth() / 4d * 3 - 5 + 80, getAppHeight() / 2d - 40))// 否则在屏幕右边
                 .collidable()
                 .with(physics)
-                .with(isPlayer?new PlayerBatComponent() : new EnemyBatComponent())
+                .with(isPlayer && playerID == 1 ? new PlayerBatComponent(1) : (isPlayer && playerID == 2 ? new PlayerBatComponent(2) : new EnemyBatComponent()))
                 .zIndex(1)
                 .build();
     }
