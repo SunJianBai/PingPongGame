@@ -23,7 +23,8 @@ import java.util.Map;
 import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class PongApp extends GameApplication {
-    public static boolean isTwoPlayerMode;
+    // 定义游戏类型
+    static boolean isTwoP = false;
     // 主界面传值的游戏难度
     static int dif = 1;
     // 玩家胜利的提示
@@ -39,7 +40,7 @@ public class PongApp extends GameApplication {
             "怎么连入机版的入机都打不过? 你才是真入机",
             "菜就多练",
             "杂鱼~ 杂鱼~",
-            "再接再厉喵!",
+            "再接再厉!",
             ""
     };
 
@@ -49,12 +50,13 @@ public class PongApp extends GameApplication {
         settings.setTitle("Ping Pong");
         settings.setVersion("1.1");
         // 窗口大小
-        settings.setWidth(1600);
-        settings.setHeight(1200);
-        //settings.setManualResizeEnabled(true);
+        settings.setWidth(800);
+        settings.setHeight(600);
+        settings.setManualResizeEnabled(true); // 允许手动调整窗口大小
         // 启用开始菜单
         settings.setMainMenuEnabled(true);
         //settings.setGameMenuEnabled(false);
+        // 启用场景切换动画
         settings.setSceneFactory(new PongSceneFactory());
 
         // 添加模式选择
@@ -63,7 +65,7 @@ public class PongApp extends GameApplication {
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
-        vars.put("isTwoPlayerMode", false); // 默认为单人模式
+        vars.put("isTwoPlayerMode", isTwoP); // 默认为单人模式
 
         vars.put("player1score", 0);
         vars.put("player2score", 0);
@@ -74,6 +76,7 @@ public class PongApp extends GameApplication {
         vars.put("mousePressed", false);
         vars.put("key_up", false);
         vars.put("key_down", false);
+
 
         vars.put("difficulty", dif);
     }
@@ -106,7 +109,9 @@ public class PongApp extends GameApplication {
         }, KeyCode.S);
 
         // 如果是双人模式，添加玩家2控制
-        if (getb("isTwoPlayerMode")) {
+        // 延迟判断双人模式，在 initGame() 中完成模式控制
+
+        if (isTwoP) {
             getInput().addAction(new UserAction("Player 2 Up") {
                 @Override
                 protected void onAction() {
@@ -131,6 +136,7 @@ public class PongApp extends GameApplication {
                 }
             }, KeyCode.DOWN);
         }
+
     }
 
 
@@ -217,7 +223,7 @@ public class PongApp extends GameApplication {
         });
     }
 
-    // 自定义背（更改RGB值）
+    // 自定义背景（更改RGB值）
     private void initCustomBackground() {
         // 自定义背景颜色 (使用深红色和深蓝色作为默认值)
         Color leftColor = Color.rgb(50, 0, 0);    // 深红色
@@ -254,7 +260,7 @@ public class PongApp extends GameApplication {
         spawn("bat", new SpawnData().put("isPlayer", true));
 
         // 如果是双人模式，生成玩家2的球拍
-        if (getb("isTwoPlayerMode")) {
+        if (isTwoP) {
             spawn("bat", new SpawnData().put("isPlayer", true));
         } else {
             // 电脑拍子
