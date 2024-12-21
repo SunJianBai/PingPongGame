@@ -45,19 +45,18 @@ public class BallComponent extends Component {
     }
 
     private void limitVelocity() {
-        // we don't want the ball to move too slow in X direction
+        //这是限制速度的函数，限制速度的原因是为了防止球速过快导致球体无法移动
         if (abs(physics.getVelocityX()) < 5 * 60) {
             physics.setVelocityX(signum(physics.getVelocityX()) * 5 * 60);
         }
 
-        // we don't want the ball to move too fast in Y direction
+        // 限制速度的原因是为了防止球速过快导致球体无法移动
         if (abs(physics.getVelocityY()) > 5 * 60 * 2) {
             physics.setVelocityY(signum(physics.getVelocityY()) * 5 * 60);
         }
     }
 
-    // this is a hack:
-    // we use a physics engine, so it is possible to push the ball through a wall to outside of the screen
+    // 检查球是否越界，如果越界，则将球回到屏幕中心
     private void checkOffscreen() {
         if (getEntity().getBoundingBoxComponent().isOutside(getGameScene().getViewport().getVisibleArea())) {
             physics.overwritePosition(new Point2D(

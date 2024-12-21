@@ -87,11 +87,11 @@ public class EnemyBatComponent extends Component {
         if (entity.getY() > ball.getBottomY()) { // 如果球在上方
             // 向上移动，并加入随机性
             a = isBallLeft ? -A : A;
-            a += randomFactor * (A / 3); // 随机偏移，但不会过大，A/3 控制偏移量
+            a += randomFactor * (A / 4); // 随机偏移，但不会过大，A/5 控制偏移量
         } else if (entity.getBottomY() < ball.getY()) { // 如果球在下方
             // 向下移动，并加入随机性
             a = isBallLeft ? A : -A;
-            a += randomFactor * (A / 3); // 随机偏移
+            a += randomFactor * (A / 4); // 随机偏移
         } else { // 如果球在中间
             // 偶尔停顿一下
             a = randomFactor == 0 ? 0 : (isBallLeft ? -A : A);
@@ -103,14 +103,21 @@ public class EnemyBatComponent extends Component {
         // 判断球是否在左边
         boolean isBallLeft = ball.getX() < entity.getRightX();
 
+        int randomFactor = (int) (Math.random() * 3) - 1; // -1:向下偏移, 0:保持原方向, 1:向上偏移
+
         if (entity.getY() > ball.getBottomY() - 20) {// 如果球在上面
             // 向上移动
             a = isBallLeft ? -A : A;
+            a += randomFactor * (A / 6);
+
         } else if (entity.getBottomY() < ball.getY() + 20) {//如果球在下面
             // 向下移动
             a = isBallLeft ? A : -A;
+            a += randomFactor * (A / 6);
+
         } else { // 就在中间
             a = 0;
+            a += randomFactor * (A / 6);
         }
     }
 

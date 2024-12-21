@@ -10,12 +10,7 @@ import static com.almasb.fxgl.dsl.FXGLForKtKt.getAppWidth;
 
 public class CustomBackgroundView extends Pane {
 
-    private final Color leftColor;
-    private final Color rightColor;
-
     public CustomBackgroundView(Color leftColor, Color rightColor) {
-        this.leftColor = leftColor;
-        this.rightColor = rightColor;
 
         // 创建与窗口相同大小的 Canvas
         Canvas canvas = new Canvas(getAppWidth(), getAppHeight());
