@@ -151,8 +151,6 @@ public class EnemyBatComponent extends Component {
         }
     }
 
-    boolean isTarget = false;
-
     void AI_3() {// 尝试预测球的轨迹
         target = predictBallTarget();
         // 向目标移动
