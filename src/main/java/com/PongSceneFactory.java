@@ -385,7 +385,7 @@ public class PongSceneFactory extends SceneFactory {
                 getContentRoot().setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, javafx.geometry.Insets.EMPTY)));
 
                 // 开发者信息
-                Label developerLabel = new Label("开发者：孙健柏\n版本：v1.0\n赞美欧姆弥赛亚");
+                Label developerLabel = new Label("开发者：孙健柏\n版本：v1.0\n源代码:https://github.com/SunJianBai/PingPongGame\n\n赞美欧姆弥赛亚");
                 developerLabel.setFont(Font.font(20));
                 developerLabel.setTextFill(Color.WHITE);
                 developerLabel.setLayoutX(50);
