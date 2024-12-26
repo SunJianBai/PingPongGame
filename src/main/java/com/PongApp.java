@@ -12,12 +12,10 @@ import com.almasb.fxgl.physics.PhysicsComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 
-import javax.print.attribute.standard.Media;
 import java.util.Map;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -39,8 +37,8 @@ public class PongApp extends GameApplication {
     final String[] enemyWinStrings = new String[]{
             "怎么连入机版的入机都打不过? 你才是真入机",
             "菜就多练",
-            "杂鱼~ 杂鱼~",
-            "再接再厉!",
+            "你这么菜, 我也不想打了",
+            "不行啊你",
             "就知道你不行"
     };
 

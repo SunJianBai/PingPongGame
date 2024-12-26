@@ -1,4 +1,4 @@
-package com;
+package com.component;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;

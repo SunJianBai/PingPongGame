@@ -1,4 +1,4 @@
-package com;
+package com.component;
 
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.physics.PhysicsComponent;

@@ -3,6 +3,8 @@ package com;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.MenuType;
 import com.almasb.fxgl.app.scene.SceneFactory;
+import com.net.GameServer;
+import com.net.LanScanner;
 import javafx.animation.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -10,10 +12,10 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
-
 
 import static com.almasb.fxgl.dsl.FXGL.play;
 import static javafx.scene.layout.Background.EMPTY;
@@ -124,6 +126,18 @@ public class PongSceneFactory extends SceneFactory {
                 });
                 applyButtonHoverEffect(twoPlayerButton);
 
+                // 局域网按钮
+                Button lanModeButton = new Button("局域网对战");
+                lanModeButton.setFont(Font.font(20));
+                lanModeButton.setTextFill(Color.WHITE);
+                lanModeButton.setBackground(Background.EMPTY);
+                lanModeButton.setLayoutX(100);
+                lanModeButton.setLayoutY(400);
+                lanModeButton.setOnAction(event -> {
+                    playSound(clickSoundPath);
+                    showLanMenu();
+                });
+                applyButtonHoverEffect(lanModeButton);
 
                 // 操作说明按钮
                 Button instructionsButton = new Button("操作说明");
@@ -211,6 +225,139 @@ public class PongSceneFactory extends SceneFactory {
 
                 getContentRoot().getChildren().addAll(difficultyLabel, backButton);
             }
+
+
+
+        // 局域网菜单：创建房间或加入房间
+            private void showLanMenu() {
+                getContentRoot().getChildren().clear(); // 清空之前的内容
+
+                // 设置背景
+                getContentRoot().setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, javafx.geometry.Insets.EMPTY)));
+
+                // 局域网标题
+                Label lanLabel = new Label("局域网对战");
+                lanLabel.setFont(Font.font(40));
+                lanLabel.setTextFill(Color.WHITE);
+                lanLabel.setLayoutX(100);
+                lanLabel.setLayoutY(40);
+
+                // 创建房间按钮
+                Button createRoomButton = new Button("创建房间");
+                createRoomButton.setFont(Font.font(20));
+                createRoomButton.setTextFill(Color.WHITE);
+                createRoomButton.setBackground(EMPTY);
+                createRoomButton.setLayoutX(370);
+                createRoomButton.setLayoutY(60);
+                createRoomButton.setOnAction(event -> createRoom());
+                applyButtonHoverEffect(createRoomButton);
+
+                // 加入房间按钮
+                Button joinRoomButton = new Button("查找房间");
+                joinRoomButton.setFont(Font.font(20));
+                joinRoomButton.setTextFill(Color.WHITE);
+                joinRoomButton.setBackground(EMPTY);
+                joinRoomButton.setLayoutX(500);
+                joinRoomButton.setLayoutY(60);
+                joinRoomButton.setOnAction(event -> scanRooms());
+                applyButtonHoverEffect(joinRoomButton);
+
+                // 房间扫描区域
+                VBox roomListContainer = new VBox(10);
+                roomListContainer.setLayoutX(150);
+                roomListContainer.setLayoutY(100);
+                roomListContainer.setPrefWidth(350);
+                roomListContainer.setPrefHeight(350);
+                roomListContainer.setStyle("-fx-background-color: #333; -fx-border-color: white; -fx-border-width: 2px;");
+
+                // 扫描房间并显示
+                scanRooms();
+
+                getContentRoot().getChildren().addAll(lanLabel, createRoomButton, joinRoomButton, roomListContainer);
+
+                // 返回按钮
+                Label backButton = new Label("返回");
+                backButton(backButton);
+            }
+
+            // 创建房间
+            private void createRoom() {
+                System.out.println("创建房间");
+
+                // 启动服务器，监听客户端的连接
+                new Thread(() -> {
+                    GameServer server = new GameServer();
+                    server.startServer();  // 启动服务器
+                }).start();
+
+                // 房主等待界面
+                Label countdownLabel = new Label("等待玩家加入...");
+                countdownLabel.setFont(Font.font(15));
+                countdownLabel.setTextFill(Color.WHITE);
+                countdownLabel.setLayoutX(550);
+                countdownLabel.setLayoutY(450);
+                getContentRoot().getChildren().add(countdownLabel);
+
+                // 倒计时 3 秒
+                PauseTransition countdown = new PauseTransition(Duration.seconds(3));
+                countdown.setOnFinished(event -> startGame());
+                countdown.play();
+            }
+
+            // 扫描局域网房间
+            private void scanRooms() {
+                System.out.println("扫描局域网房间...");
+
+                // 假设通过 LanScanner 扫描房间
+                LanScanner lanScanner = new LanScanner();
+                String[] rooms = lanScanner.scan(); // 获取房间列表
+
+                VBox roomListContainer = new VBox(10);
+                roomListContainer.setLayoutX(150);
+                roomListContainer.setLayoutY(100);
+                roomListContainer.setPrefWidth(350);
+                roomListContainer.setPrefHeight(350);
+                roomListContainer.setStyle("-fx-background-color: #333; -fx-border-color: white; -fx-border-width: 2px;");
+
+                for (String room : rooms) {
+                    Button roomButton = new Button(room);
+                    roomButton.setFont(Font.font(18));
+                    roomButton.setTextFill(Color.WHITE);
+                    roomButton.setBackground(EMPTY);
+                    roomButton.setOnAction(event -> joinRoom(room));
+                    roomListContainer.getChildren().add(roomButton);
+                }
+
+                getContentRoot().getChildren().add(roomListContainer);
+            }
+
+            // 加入房间
+            private void joinRoom(String roomName) {
+                System.out.println("加入房间: " + roomName);
+
+                // 倒计时
+                Label countdownLabel = new Label("准备开始...");
+                countdownLabel.setFont(Font.font(30));
+                countdownLabel.setTextFill(Color.WHITE);
+                countdownLabel.setLayoutX(150);
+                countdownLabel.setLayoutY(550);
+                getContentRoot().getChildren().add(countdownLabel);
+
+                // 3秒倒计时
+                PauseTransition countdown = new PauseTransition(Duration.seconds(3));
+                countdown.setOnFinished(event -> startGame());
+                countdown.play();
+            }
+
+            // 游戏开始
+            private void startGame() {
+                System.out.println("游戏开始");
+
+                // 切换到游戏界面
+                // 你可以根据实际情况来启动游戏界面
+            }
+
+
 
             // 操作说明界面
             private void showInstructions() {
