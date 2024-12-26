@@ -9,6 +9,9 @@ import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
+import com.component.PongFactory;
+import com.ui.CustomBackgroundView;
+import com.ui.PongSceneFactory;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
@@ -22,9 +25,9 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class PongApp extends GameApplication {
     // 定义游戏类型
-    static boolean isTwoP = true;
+    public static boolean isTwoP = true;
     // 主界面传值的游戏难度
-    static int dif = 1;
+    public static int dif = 1;
     // 玩家胜利的提示
     final String[] playerWinStrings = new String[]{
             "打赢这种程度的敌人有什么好骄傲的",

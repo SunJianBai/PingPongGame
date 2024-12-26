@@ -1,5 +1,6 @@
-package com;
+package com.ui;
 
+import com.PongApp;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.MenuType;
 import com.almasb.fxgl.app.scene.SceneFactory;
