@@ -19,6 +19,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
+
 import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class PongFactory implements EntityFactory {
@@ -36,9 +37,13 @@ public class PongFactory implements EntityFactory {
                 .density(0.3f)// 密度
                 .restitution(1.0f));// 弹性
 
+
+        // 获取全局变量 WINNING_SCORE
+        int winningScore = geti("WINNING_SCORE");
+
         // 监控得分情况
-        var endGame = getip("player1score").greaterThanOrEqualTo(9)
-                .or(getip("player2score").isEqualTo(9));
+        var endGame = getip("player1score").greaterThanOrEqualTo(winningScore-1)
+                .or(getip("player2score").isEqualTo(winningScore-1));
 
 
 
@@ -80,7 +85,7 @@ public class PongFactory implements EntityFactory {
     @Spawns("bat")
     public Entity newBat(SpawnData data) {
         PhysicsComponent physics = new PhysicsComponent();
-        physics.setBodyType(BodyType.KINEMATIC);
+        physics.setBodyType(BodyType.KINEMATIC); // 禁止物理效果
 
         boolean isPlayer = data.get("isPlayer"); // 判断是否为玩家
         int playerID = data.get("playerID"); // 获取玩家 ID（1 或 2）
@@ -97,4 +102,129 @@ public class PongFactory implements EntityFactory {
                 .zIndex(1)
                 .build();
     }
+
+
+    @Spawns("wall_top")
+    public Entity newWall_top(SpawnData data) {
+        // 创建物理组件
+        PhysicsComponent physics = new PhysicsComponent();
+        physics.setBodyType(BodyType.KINEMATIC); // 禁止物理效果
+
+
+        return entityBuilder(data)
+                .type(PongType.wall)
+                .viewWithBBox(new Rectangle(getAppWidth(), 5, Color.WHITE)) // 第三个墙体
+                .at(0, 0) // 第三个墙体位置
+                .collidable() // 墙体可被碰撞
+                .with(physics)
+                .build();
+    }
+    @Spawns("wall_bottom")
+    public Entity newWall_bottom(SpawnData data) {
+        // 创建物理组件
+        PhysicsComponent physics = new PhysicsComponent();
+        physics.setBodyType(BodyType.KINEMATIC); // 禁止物理效果
+
+        return entityBuilder(data)
+                .type(PongType.wall)
+                .viewWithBBox(new Rectangle(getAppWidth(), 5, Color.WHITE)) // 第四个墙体
+                .at(0, getAppHeight() - 5) // 第四个墙体位置
+                .collidable() // 墙体可被碰撞
+                .with(physics)
+                .build();
+    }
+
+    @Spawns("wall_top_left")
+    public Entity newWallTopLeft(SpawnData data) {
+        // 创建物理组件
+        PhysicsComponent physics = new PhysicsComponent();
+        physics.setBodyType(BodyType.KINEMATIC); // 禁止物理效果
+
+        // 设置斜边的长度 x 和宽度
+        double x = 10;  // 你可以调整这个值来控制斜边的长度
+
+        // 创建左上斜边墙体，矩形宽度为2，长度为x*1.5
+        Rectangle rectangle = new Rectangle(2, 30, Color.WHITE);
+        rectangle.setRotate(135);  // 旋转矩形，使其倾斜45度
+
+        // 创建左上斜边墙体并返回
+        return entityBuilder(data)
+                .type(PongType.wall)
+                .viewWithBBox(rectangle)  // 斜边墙体
+                .at(getAppWidth() / 2 - x, 0)  // 设置位置
+                .collidable()  // 墙体可被碰撞
+                .with(physics)
+                .build();
+    }
+
+    @Spawns("wall_top_right")
+    public Entity newWallTopRight(SpawnData data) {
+        // 创建物理组件
+        PhysicsComponent physics = new PhysicsComponent();
+        physics.setBodyType(BodyType.KINEMATIC); // 禁止物理效果
+
+        // 设置斜边的长度 x 和宽度
+        double x = 10;  // 你可以调整这个值来控制斜边的长度
+
+        // 创建右上斜边墙体，矩形宽度为2，长度为x*1.5
+        Rectangle rectangle = new Rectangle(2, x*1.414, Color.WHITE);
+        rectangle.setRotate(45);  // 旋转矩形，使其倾斜45度
+
+        // 创建右上斜边墙体并返回
+        return entityBuilder(data)
+                .type(PongType.wall)
+                .viewWithBBox(rectangle)  // 斜边墙体
+                .at(getAppWidth() / 2 + x , 0)  // 设置位置
+                .collidable()  // 墙体可被碰撞
+                .with(physics)
+                .build();
+    }
+
+    @Spawns("wall_bottom_left")
+    public Entity newWallBottomLeft(SpawnData data) {
+        // 创建物理组件
+        PhysicsComponent physics = new PhysicsComponent();
+        physics.setBodyType(BodyType.KINEMATIC); // 禁止物理效果
+
+        // 设置斜边的长度 x 和宽度
+        double x = 10;  // 你可以调整这个值来控制斜边的长度
+
+        // 创建左下斜边墙体，矩形宽度为2，长度为x*1.5
+        Rectangle rectangle = new Rectangle(2, 30, Color.WHITE);
+        rectangle.setRotate(45);  // 旋转矩形，使其倾斜45度
+
+        // 创建左下斜边墙体并返回
+        return entityBuilder(data)
+                .type(PongType.wall)
+                .viewWithBBox(rectangle)  // 斜边墙体
+                .at(getAppWidth() / 2 - x -1, getAppHeight() - x -1 )  // 设置位置
+                .collidable()  // 墙体可被碰撞
+                .with(physics)
+                .build();
+    }
+
+    @Spawns("wall_bottom_right")
+    public Entity newWallBottomRight(SpawnData data) {
+        // 创建物理组件
+        PhysicsComponent physics = new PhysicsComponent();
+        physics.setBodyType(BodyType.KINEMATIC); // 禁止物理效果
+
+        // 设置斜边的长度 x 和宽度
+        double x = 10;  // 你可以调整这个值来控制斜边的长度
+
+        // 创建右下斜边墙体，矩形宽度为2，长度为x*1.5
+        Rectangle rectangle = new Rectangle(2, 30, Color.WHITE);
+        rectangle.setRotate(135);  // 旋转矩形，使其倾斜45度
+
+        // 创建右下斜边墙体并返回
+        return entityBuilder(data)
+                .type(PongType.wall)
+                .viewWithBBox(rectangle)  // 斜边墙体
+                .at(getAppWidth() / 2 + x, getAppHeight()- x -1 )  // 设置位置
+                .collidable()  // 墙体可被碰撞
+                .with(physics)
+                .build();
+    }
+
+
 }

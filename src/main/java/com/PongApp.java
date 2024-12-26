@@ -2,6 +2,7 @@ package com;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.audio.Music;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.input.UserAction;
@@ -11,10 +12,12 @@ import com.almasb.fxgl.physics.PhysicsComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 
+import javax.print.attribute.standard.Media;
 import java.util.Map;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -50,6 +53,7 @@ public class PongApp extends GameApplication {
         settings.setWidth(800);
         settings.setHeight(600);
         settings.setManualResizeEnabled(true); // 允许手动调整窗口大小
+
         // 启用开始菜单
         settings.setMainMenuEnabled(true);
         //settings.setGameMenuEnabled(false);
@@ -64,6 +68,8 @@ public class PongApp extends GameApplication {
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("isTwoPlayerMode", isTwoP); // 默认为单人模式
 
+        set("WINNING_SCORE", 10); // 定义胜利条件为 9 分
+
         vars.put("player1score", 0);
         vars.put("player2score", 0);
 
@@ -73,7 +79,6 @@ public class PongApp extends GameApplication {
         vars.put("mousePressed", false);
         vars.put("key_up", false);
         vars.put("key_down", false);
-
 
         vars.put("difficulty", dif);
     }
@@ -85,13 +90,13 @@ public class PongApp extends GameApplication {
             @Override
             protected void onAction() {
                 set("key_w", true);
-                System.out.println("Player 1 Up pressed"); // 调试用
+                //System.out.println("Player 1 Up pressed"); // 调试用
             }
 
             @Override
             protected void onActionEnd() {
                 set("key_w", false);
-                System.out.println("Player 1 Up released");
+                //System.out.println("Player 1 Up released");
             }
         }, KeyCode.W);
 
@@ -99,13 +104,13 @@ public class PongApp extends GameApplication {
             @Override
             protected void onAction() {
                 set("key_s", true);
-                System.out.println("Player 1 Down pressed");
+                //System.out.println("Player 1 Down pressed");
             }
 
             @Override
             protected void onActionEnd() {
                 set("key_s", false);
-                System.out.println("Player 1 Down released");
+                //System.out.println("Player 1 Down released");
             }
         }, KeyCode.S);
 
@@ -116,13 +121,13 @@ public class PongApp extends GameApplication {
                 @Override
                 protected void onAction() {
                     set("key_up", true);
-                    System.out.println("Player 2 Up pressed");
+                    //System.out.println("Player 2 Up pressed");
                 }
 
                 @Override
                 protected void onActionEnd() {
                     set("key_up", false);
-                    System.out.println("Player 2 Up released");
+                    //System.out.println("Player 2 Up released");
                 }
             }, KeyCode.UP);
 
@@ -130,13 +135,13 @@ public class PongApp extends GameApplication {
                 @Override
                 protected void onAction() {
                     set("key_down", true);
-                    System.out.println("Player 2 Down pressed");
+                    //System.out.println("Player 2 Down pressed");
                 }
 
                 @Override
                 protected void onActionEnd() {
                     set("key_down", false);
-                    System.out.println("Player 2 Down released");
+                    //System.out.println("Player 2 Down released");
                 }
             }, KeyCode.DOWN);
         }
@@ -230,8 +235,8 @@ public class PongApp extends GameApplication {
     // 自定义背景（更改RGB值）
     private void initCustomBackground() {
         // 自定义背景颜色 (使用深红色和深蓝色作为默认值)
-        Color leftColor = Color.rgb(50, 0, 0);    // 深红色
-        Color rightColor = Color.rgb(0, 0, 80);  // 深蓝色
+        Color leftColor = Color.rgb(30, 0, 0);    // 深红色
+        Color rightColor = Color.rgb(0, 0, 40);  // 深蓝色
 
         // 你可以根据需要调整 RGB 值
         entityBuilder()
@@ -247,6 +252,16 @@ public class PongApp extends GameApplication {
         // 缓存音效
         getAssetLoader().loadSound("hit_bat_new.wav");
         getAssetLoader().loadSound("hit_wall_new.wav");
+
+        Music menuMusic = getAssetLoader().loadMusic("assets/sounds/background.wav");
+        Music gameMusic = getAssetLoader().loadMusic("assets/sounds/game_music.wav");
+
+        // 停止其他音乐并播放游戏音乐
+
+        getAudioPlayer().stopMusic( menuMusic );
+        getAudioPlayer().loopMusic(gameMusic);  // 需要在资源加载之后调用
+
+
         //添加实体工厂
         getGameWorld().addEntityFactory(new PongFactory());
 
@@ -258,7 +273,6 @@ public class PongApp extends GameApplication {
 
         // 生成球
         spawn("ball", new SpawnData(getAppWidth() / 2d, getAppHeight() / 2d));
-
 
         // 生成玩家1的球拍
         spawn("bat", new SpawnData()
@@ -281,10 +295,13 @@ public class PongApp extends GameApplication {
         // 生成边界
         entityBuilder().type(PongType.wall).collidable().with(new PhysicsComponent()).buildScreenBoundsAndAttach(100);
 
+        // 获取全局变量 WINNING_SCORE
+        int winningScore = geti("WINNING_SCORE");
+
         // 当游戏结束时
         if (isTwoP) {
             getip("player1score").addListener((observable, oldValue, newValue) -> {
-                if (newValue.intValue() >= 10) {
+                if (newValue.intValue() >= winningScore) {
                     getDialogService().showChoiceBox(
                          "恭喜玩家1获胜!\n右边的玩家还是逊啦\n是否重新开始?",
                         o -> {
@@ -300,7 +317,7 @@ public class PongApp extends GameApplication {
                 }
             });
             getip("player2score").addListener((observable, oldValue, newValue) -> {
-                if (newValue.intValue() >= 10) {
+                if (newValue.intValue() >= winningScore) {
                     getDialogService().showChoiceBox(
                           "恭喜玩家2获胜!\n左边的玩家有点菜哦\n是否重新开始?",
                         o -> {
@@ -317,7 +334,7 @@ public class PongApp extends GameApplication {
             });
         }else{
             getip("player1score").addListener((observable, oldValue, newValue) -> {
-                if (newValue.intValue() >= 10) {
+                if (newValue.intValue() >= winningScore) {
                     getDialogService().showChoiceBox(
                         playerWinStrings[dif] + "\n是否重新开始?",
                         o -> {
@@ -333,7 +350,7 @@ public class PongApp extends GameApplication {
                 }
             });
             getip("player2score").addListener((observable, oldValue, newValue) -> {
-                if (newValue.intValue() >= 10) {
+                if (newValue.intValue() >= winningScore) {
                     getDialogService().showChoiceBox(
                         enemyWinStrings[dif] + "\n是否重新开始?",
                         o -> {

@@ -63,11 +63,12 @@ public class PlayerBatComponent extends Component {
 
     // 限制在屏幕内
     private void constrainToBounds() {
-        if (entity.getY() < 0) {
-            physics.overwritePosition(new Point2D(entity.getX(), 0));
+        int x =20;
+        if (entity.getY() < -x) {
+            physics.overwritePosition(new Point2D(entity.getX(), -x));
         }
-        if (entity.getBottomY() > FXGL.getAppHeight()) {
-            physics.overwritePosition(new Point2D(entity.getX(), FXGL.getAppHeight() - entity.getHeight()));
+        if (entity.getBottomY() > FXGL.getAppHeight() + x) {
+            physics.overwritePosition(new Point2D(entity.getX(), FXGL.getAppHeight() + x - entity.getHeight()));
         }
     }
 

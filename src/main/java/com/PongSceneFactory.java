@@ -6,6 +6,7 @@ import com.almasb.fxgl.app.scene.SceneFactory;
 import javafx.animation.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -14,9 +15,11 @@ import javafx.scene.text.Font;
 import javafx.util.Duration;
 
 
+import static com.almasb.fxgl.dsl.FXGL.play;
 import static javafx.scene.layout.Background.EMPTY;
 
 public class PongSceneFactory extends SceneFactory {
+
 
     @Override
     public FXGLMenu newMainMenu() {
@@ -35,8 +38,21 @@ public class PongSceneFactory extends SceneFactory {
             int difficulty = 1; // 默认难度
             final int num_dif = 5; // 难度种类数
 
+            // 加载音效
+            private final String hoverSoundPath = "hover_sound.wav";  // 鼠标悬停音效路径
+            private final String clickSoundPath = "click_sound.wav";  // 点击音效路径
+
+            // 播放音效方法
+            private void playSound(String soundPath) {
+                play(soundPath);
+            }
+
+            // 按钮效果
             private void applyButtonHoverEffect(Button button) {
                 button.setOnMouseEntered(event -> {
+                    // 鼠标悬停时播放音效
+                    playSound(hoverSoundPath);
+
                     ScaleTransition st = new ScaleTransition(Duration.seconds(0.2), button);
                     st.setToX(1.2); // 放大 1.2 倍
                     st.setToY(1.2);
@@ -51,6 +67,7 @@ public class PongSceneFactory extends SceneFactory {
                     st.play();
                     button.setTextFill(Color.WHITE); // 恢复原字体颜色
                 });
+
             }
 
 
@@ -87,7 +104,10 @@ public class PongSceneFactory extends SceneFactory {
                 aiModeButton.setBackground(EMPTY);
                 aiModeButton.setLayoutX(100);
                 aiModeButton.setLayoutY(350);
-                aiModeButton.setOnAction(event -> showDifficultyMenu()); // 切换到二级菜单
+                aiModeButton.setOnAction(event -> {
+                    showDifficultyMenu();
+                    playSound(clickSoundPath);
+                }); // 切换到二级菜单
                 applyButtonHoverEffect(aiModeButton);
 
                 // 双人模式按钮
@@ -100,6 +120,7 @@ public class PongSceneFactory extends SceneFactory {
                 twoPlayerButton.setOnAction(event -> {
                     PongApp.isTwoP = true; // 设置双人模式
                     getController().startNewGame();
+                    playSound(clickSoundPath);
                 });
                 applyButtonHoverEffect(twoPlayerButton);
 
@@ -111,7 +132,10 @@ public class PongSceneFactory extends SceneFactory {
                 instructionsButton.setBackground(EMPTY);
                 instructionsButton.setLayoutX(100);
                 instructionsButton.setLayoutY(450);
-                instructionsButton.setOnAction(event -> showInstructions()); // 显示操作说明界面
+                instructionsButton.setOnAction(event -> {
+                    showInstructions();
+                    playSound(clickSoundPath);
+                }); // 显示操作说明界面
                 applyButtonHoverEffect(instructionsButton);
 
                 // 开发者按钮
@@ -121,7 +145,10 @@ public class PongSceneFactory extends SceneFactory {
                 developerButton.setBackground(EMPTY);
                 developerButton.setLayoutX(100);
                 developerButton.setLayoutY(500);
-                developerButton.setOnAction(event -> showDeveloperInfo()); // 显示开发者信息界面
+                developerButton.setOnAction(event -> {
+                    showDeveloperInfo();
+                    playSound(clickSoundPath);
+                }); // 显示开发者信息界面
                 applyButtonHoverEffect(developerButton);
 
                 getContentRoot().getChildren().addAll(titleLabelLabel, aiModeButton, twoPlayerButton, instructionsButton, developerButton);
@@ -150,6 +177,11 @@ public class PongSceneFactory extends SceneFactory {
                     difficultyButton.setBackground(EMPTY);
                     difficultyButton.setLayoutX(100);
                     difficultyButton.setLayoutY(200 + i * 50);
+
+                    Tooltip difficultyTip = new Tooltip(difficultyTooltip[i]);
+                    difficultyTip.setShowDelay(Duration.ZERO);
+                    difficultyButton.setTooltip(difficultyTip);
+
                     difficultyButton.setOnAction(event -> {
                         difficulty = diff; // 设置难度
                         PongApp.dif = difficulty; // 全局变量
@@ -161,13 +193,20 @@ public class PongSceneFactory extends SceneFactory {
                 }
 
                 // 返回按钮
+                backButton(difficultyLabel);
+            }
+
+            private void backButton(Label difficultyLabel) {
                 Button backButton = new Button("返回");
                 backButton.setFont(Font.font(20));
                 backButton.setTextFill(Color.WHITE);
                 backButton.setBackground(EMPTY);
                 backButton.setLayoutX(100);
                 backButton.setLayoutY(500);
-                backButton.setOnAction(event -> showMainMenu()); // 返回一级菜单
+                backButton.setOnAction(event -> {
+                    showMainMenu();
+                    playSound(clickSoundPath);
+                }); // 返回一级菜单
                 applyButtonHoverEffect(backButton);
 
                 getContentRoot().getChildren().addAll(difficultyLabel, backButton);
@@ -181,23 +220,14 @@ public class PongSceneFactory extends SceneFactory {
                 getContentRoot().setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, javafx.geometry.Insets.EMPTY)));
 
                 // 说明内容
-                Label instructionsLabel = new Label("操作说明：\n目标：将球打到对方区域\n\n玩家1：W/S键控制上/下\n玩家2：方向键控制上/下");
+                Label instructionsLabel = new Label("操作说明：\n目标：将球打到对方区域,并避免球打到己方边界\n\n玩家1：'W'/'S'键控制上/下\n玩家2：:'↑'/'↓' 键控制上/下");
                 instructionsLabel.setFont(Font.font(20));
                 instructionsLabel.setTextFill(Color.WHITE);
                 instructionsLabel.setLayoutX(50);
                 instructionsLabel.setLayoutY(100);
 
                 // 返回按钮
-                Button backButton = new Button("返回");
-                backButton.setFont(Font.font(20));
-                backButton.setTextFill(Color.WHITE);
-                backButton.setBackground(EMPTY);
-                backButton.setLayoutX(100);
-                backButton.setLayoutY(500);
-                backButton.setOnAction(event -> showMainMenu());
-                applyButtonHoverEffect(backButton);
-
-                getContentRoot().getChildren().addAll(instructionsLabel, backButton);
+                backButton(instructionsLabel);
             }
 
             // 开发者信息界面
@@ -215,16 +245,7 @@ public class PongSceneFactory extends SceneFactory {
                 developerLabel.setLayoutY(100);
 
                 // 返回按钮
-                Button backButton = new Button("返回");
-                backButton.setFont(Font.font(20));
-                backButton.setTextFill(Color.WHITE);
-                backButton.setBackground(EMPTY);
-                backButton.setLayoutX(100);
-                backButton.setLayoutY(500);
-                backButton.setOnAction(event -> showMainMenu());
-                applyButtonHoverEffect(backButton);
-
-                getContentRoot().getChildren().addAll(developerLabel, backButton);
+                backButton(developerLabel);
             }
 
             @Override
